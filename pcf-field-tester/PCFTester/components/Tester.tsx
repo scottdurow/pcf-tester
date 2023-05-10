@@ -35,6 +35,13 @@ const useStyles = makeStyles({
     },
 });
 
+const useCellStyles = makeStyles({
+    overflow: {
+        textOverflow: 'ellipsis',
+        whiteSpace: 'nowrap',
+    },
+});
+
 export interface TesterProps {
     logEvents: LogEventRow[];
     width: number;
@@ -57,11 +64,12 @@ export interface TesterInterface {
 }
 
 export const Tester = React.forwardRef<TesterInterface, TesterProps>((props: TesterProps, ref) => {
-    const { logEvents, onCommand, height, heightMode, width, mode } = props;
+    const { logEvents, onCommand, height, heightMode, mode } = props;
 
     const inputId = useId('input');
     const [command, setCommand] = React.useState('');
     const styles = useStyles();
+    const cellStyles = useCellStyles();
     const { targetDocument } = useFluent();
     const scrollbarWidth = useScrollbarWidth({ targetDocument });
     const [internalLogEvents, setInternalLogEvents] = React.useState(props.logEvents);
@@ -97,7 +105,7 @@ export const Tester = React.forwardRef<TesterInterface, TesterProps>((props: Tes
                 return '#';
             },
             renderCell: (item) => {
-                return item.index.toString();
+                return <div>{item.index.toString()}</div>;
             },
         }),
         createTableColumn<LogEventRow>({
@@ -106,7 +114,7 @@ export const Tester = React.forwardRef<TesterInterface, TesterProps>((props: Tes
                 return 'Event';
             },
             renderCell: (item) => {
-                return item.eventName;
+                return <div>{item.eventName}</div>;
             },
         }),
         createTableColumn<LogEventRow>({
@@ -115,7 +123,7 @@ export const Tester = React.forwardRef<TesterInterface, TesterProps>((props: Tes
                 return 'Source';
             },
             renderCell: (item) => {
-                return item.source;
+                return <div>{item.source}</div>;
             },
         }),
         createTableColumn<LogEventRow>({
@@ -124,7 +132,7 @@ export const Tester = React.forwardRef<TesterInterface, TesterProps>((props: Tes
                 return 'message';
             },
             renderCell: (item) => {
-                return item.message;
+                return <div className={cellStyles.overflow}>{item.message}</div>;
             },
         }),
     ];

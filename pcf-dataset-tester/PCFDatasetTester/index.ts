@@ -29,7 +29,8 @@ export class PCFTester implements ComponentFramework.ReactControl<IInputs, IOutp
     private eventDisplayName: string;
     private context: ContextExtended<IInputs>;
     private propertyBag: Record<string, string> = {};
-    scheduleEvent: boolean;
+    private scheduleEvent: boolean;
+    private state: ComponentFramework.Dictionary;
 
     private incrementEventCount(event: string): number {
         if (this.eventCount[event]) {
@@ -43,7 +44,7 @@ export class PCFTester implements ComponentFramework.ReactControl<IInputs, IOutp
         return this.eventCount[event] ?? 0;
     }
 
-    testerRef: React.RefObject<TesterInterface>;
+    private testerRef: React.RefObject<TesterInterface>;
 
     /**
      * Empty constructor.
@@ -65,6 +66,7 @@ export class PCFTester implements ComponentFramework.ReactControl<IInputs, IOutp
         state: ComponentFramework.Dictionary,
     ): void {
         this.context = context as ContextExtended<IInputs>;
+        this.state = state;
         context.mode.trackContainerResize(true);
         this.notifyOutputChanged = notifyOutputChanged;
         this.setEvent(PCFEvents.init);
@@ -116,63 +118,70 @@ export class PCFTester implements ComponentFramework.ReactControl<IInputs, IOutp
             case 'data':
                 {
                     const dataset = context.parameters.dataset_a;
-                    const columns = dataset.columns.filter((c) => !c.isHidden && c.order !== -1);
-                    const datasetChanged =
-                        context.updatedProperties.indexOf('dataset') > -1 ||
-                        context.updatedProperties.indexOf('records_dataset_a') > -1;
-                    if (!dataset.loading && datasetChanged) {
-                        // List the data
-                        dataset.sortedRecordIds.reverse().forEach((id, index) => {
-                            const row = dataset.records[id];
-                            const rowIndex = dataset.sortedRecordIds.length - index;
-                            const rowData = columns.map((c) => `${row.getFormattedValue(c.name)}`).join(' | ');
-                            this.logEvent('Row ' + rowIndex.toString(), rowData, false);
-                        });
+                    if (dataset) {
+                        const columns = dataset.columns.filter((c) => !c.isHidden && c.order !== -1);
+                        const datasetChanged =
+                            context.updatedProperties.indexOf('dataset') > -1 ||
+                            context.updatedProperties.indexOf('records_dataset_a') > -1;
+                        if (!dataset.loading && datasetChanged) {
+                            // List the data
+                            dataset.sortedRecordIds.reverse().forEach((id, index) => {
+                                const row = dataset.records[id];
+                                const rowIndex = dataset.sortedRecordIds.length - index;
+                                const rowData = columns.map((c) => `${row.getFormattedValue(c.name)}`).join(' | ');
+                                this.logEvent('Row ' + rowIndex.toString(), rowData, false);
+                            });
+                        }
                     }
                 }
                 break;
             case 'columns':
                 {
                     const dataset = context.parameters.dataset_a;
-                    const columns = dataset.columns.filter((c) => !c.isHidden && c.order !== -1);
-                    const columnDisplayNames = columns.map((c) => `${c.displayName}`).join(' | ');
-                    const columnLogicalNames = columns
-                        .map((c) => `${c.name}${c.alias ? '(' + c.alias + ')' : ''}`)
-                        .join(' | ');
-                    this.logEvent('Cols', columnDisplayNames);
-                    this.logEvent('Cols (logical/alias)', columnLogicalNames);
+                    if (dataset) {
+                        const columns = dataset.columns.filter((c) => !c.isHidden && c.order !== -1);
+                        const columnDisplayNames = columns.map((c) => `${c.displayName}`).join(' | ');
+                        const columnLogicalNames = columns
+                            .map((c) => `${c.name}${c.alias ? '(' + c.alias + ')' : ''}`)
+                            .join(' | ');
+                        this.logEvent('Cols', columnDisplayNames);
+                        this.logEvent('Cols (logical/alias)', columnLogicalNames);
+                    }
                 }
                 break;
             case 'dataset':
                 {
-                    const datasetInfo = {
-                        isLoading: context.parameters.dataset_a.loading,
-                        isError: context.parameters.dataset_a.error,
-                        errorMessage: context.parameters.dataset_a.errorMessage,
-                        rowCount: context.parameters.dataset_a.sortedRecordIds.length,
-                        total: context.parameters.dataset_a.paging.totalResultCount,
-                        firstPageNumber: context.parameters.dataset_a.paging.firstPageNumber,
-                        lastPageNumber: context.parameters.dataset_a.paging.lastPageNumber,
+                    const dataset = context.parameters.dataset_a;
+                    if (dataset) {
+                        const datasetInfo = {
+                            isLoading: dataset.loading,
+                            isError: dataset.error,
+                            errorMessage: dataset.errorMessage,
+                            rowCount: dataset.sortedRecordIds.length,
+                            total: dataset.paging.totalResultCount,
+                            firstPageNumber: dataset.paging.firstPageNumber,
+                            lastPageNumber: dataset.paging.lastPageNumber,
 
-                        hasPreviousPage: context.parameters.dataset_a.paging.hasPreviousPage,
-                        hasNextPage: context.parameters.dataset_a.paging.hasNextPage,
-                    };
+                            hasPreviousPage: dataset.paging.hasPreviousPage,
+                            hasNextPage: dataset.paging.hasNextPage,
+                        };
 
-                    const source = `📁dataset ${this.incrementEventCount('dataset')}`;
-                    if (datasetInfo.isLoading) {
-                        this.logEvent(source, '⌛', false);
-                    } else if (datasetInfo.isError) {
-                        this.logEvent(source, `⚠️${datasetInfo.errorMessage}`, false);
-                    } else {
-                        this.logEvent(
-                            source,
-                            `${datasetInfo.rowCount}/${datasetInfo.total}  | firstPage:${
-                                datasetInfo.firstPageNumber
-                            } | lastPage:${datasetInfo.lastPageNumber} | ${datasetInfo.hasPreviousPage ? '⬅️' : ''}  ${
-                                datasetInfo.hasNextPage ? '➡️' : ''
-                            }`,
-                            false,
-                        );
+                        const source = `📁dataset ${this.incrementEventCount('dataset')}`;
+                        if (datasetInfo.isLoading) {
+                            this.logEvent(source, '⌛', false);
+                        } else if (datasetInfo.isError) {
+                            this.logEvent(source, `⚠️${datasetInfo.errorMessage}`, false);
+                        } else {
+                            this.logEvent(
+                                source,
+                                `${datasetInfo.rowCount}/${datasetInfo.total}  | firstPage:${
+                                    datasetInfo.firstPageNumber
+                                } | lastPage:${datasetInfo.lastPageNumber} | ${
+                                    datasetInfo.hasPreviousPage ? '⬅️' : ''
+                                }  ${datasetInfo.hasNextPage ? '➡️' : ''}`,
+                                false,
+                            );
+                        }
                     }
                 }
                 break;
@@ -190,6 +199,15 @@ export class PCFTester implements ComponentFramework.ReactControl<IInputs, IOutp
                     context.updatedProperties.join(' | '),
                     false,
                 );
+                break;
+
+            case 'state':
+                {
+                    const state = this.state;
+                    if (state) {
+                        this.logEvent('state', JSON.stringify(state), false);
+                    }
+                }
                 break;
             default:
                 this.logEvent('---', '---', false);
@@ -242,6 +260,19 @@ export class PCFTester implements ComponentFramework.ReactControl<IInputs, IOutp
             case 'set':
                 this.propertyBag[args[0]] = args[1];
                 break;
+            case 'setstate':
+                {
+                    // Set the state to the second argument
+                    this.state = this.state || {};
+                    this.state[args[0]] = args[1];
+                    this.context.mode.setControlState(this.state);
+                }
+                break;
+            case 'clearstate':
+                {
+                    this.context.mode.setControlState({});
+                }
+                break;
             case 'pagesize':
                 this.context.parameters.dataset_a.paging.setPageSize(parseInt(args[0]));
                 break;
@@ -249,6 +280,7 @@ export class PCFTester implements ComponentFramework.ReactControl<IInputs, IOutp
                 this.runModeCommands();
                 this.refreshItems();
                 break;
+
             case 'mode':
                 {
                     // set the mode to the second argument
