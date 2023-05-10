@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { getMode, setMode } from './TestMode';
 import { LogEventRow, Tester, TesterInterface } from './components/Tester';
-import { IInputs, IOutputs } from './generated/ManifestTypes';
+import { IInputs, IOutputs } from './ManifestTypes';
 import { ContextExtended } from '../ContextExtended';
 import { random } from 'lodash-es';
 
@@ -13,12 +13,12 @@ const enum PCFEvents {
 }
 const EventNameMap: Record<PCFEvents, string> = {
     init: '🟢',
-    updateView: '🔃',
+    updateView: '🔶',
     Command: '🚀',
-    getOutputs: '📤',
+    getOutputs: '🔼',
 };
 
-export class PCFDatasetTester implements ComponentFramework.ReactControl<IInputs, IOutputs> {
+export class PCFTester implements ComponentFramework.ReactControl<IInputs, IOutputs> {
     private theComponent: ComponentFramework.ReactControl<IInputs, IOutputs>;
     private notifyOutputChanged: () => void;
 
@@ -68,7 +68,8 @@ export class PCFDatasetTester implements ComponentFramework.ReactControl<IInputs
         context.mode.trackContainerResize(true);
         this.notifyOutputChanged = notifyOutputChanged;
         this.setEvent(PCFEvents.init);
-        this.logEvent('---', '---', false);
+        this.logEvent('init', '---', false);
+        this.runModeCommands();
     }
 
     /**
@@ -105,11 +106,43 @@ export class PCFDatasetTester implements ComponentFramework.ReactControl<IInputs
     private runCommand(mode: string) {
         const context = this.context;
         switch (mode) {
+            case 'clearevents':
+                this.logEvents = [];
+                break;
             case 'error':
                 // prevent error on first render!
                 if (this.getEventCount(PCFEvents.updateView) > 1) throw new Error('Error from updateView');
                 break;
-
+            case 'data':
+                {
+                    const dataset = context.parameters.dataset_a;
+                    const columns = dataset.columns.filter((c) => !c.isHidden && c.order !== -1);
+                    const datasetChanged =
+                        context.updatedProperties.indexOf('dataset') > -1 ||
+                        context.updatedProperties.indexOf('records_dataset_a') > -1;
+                    if (!dataset.loading && datasetChanged) {
+                        // List the data
+                        dataset.sortedRecordIds.reverse().forEach((id, index) => {
+                            const row = dataset.records[id];
+                            const rowIndex = dataset.sortedRecordIds.length - index;
+                            const rowData = columns.map((c) => `${row.getFormattedValue(c.name)}`).join(' | ');
+                            this.logEvent('Row ' + rowIndex.toString(), rowData, false);
+                        });
+                    }
+                }
+                break;
+            case 'columns':
+                {
+                    const dataset = context.parameters.dataset_a;
+                    const columns = dataset.columns.filter((c) => !c.isHidden && c.order !== -1);
+                    const columnDisplayNames = columns.map((c) => `${c.displayName}`).join(' | ');
+                    const columnLogicalNames = columns
+                        .map((c) => `${c.name}${c.alias ? '(' + c.alias + ')' : ''}`)
+                        .join(' | ');
+                    this.logEvent('Cols', columnDisplayNames);
+                    this.logEvent('Cols (logical/alias)', columnLogicalNames);
+                }
+                break;
             case 'dataset':
                 {
                     const datasetInfo = {
@@ -170,7 +203,10 @@ export class PCFDatasetTester implements ComponentFramework.ReactControl<IInputs
     private logEvent(source: string, message: string, forceRefresh = true) {
         const event = { eventName: this.eventDisplayName, source, message } as LogEventRow;
         event.timestamp = new Date();
-        this.logEvents.unshift({ ...event, index: this.logEvents.length + 1 } as LogEventRow);
+        const row = { ...event, index: this.logEvents.length + 1 } as LogEventRow;
+
+        this.logEvents.unshift(row);
+
         if (forceRefresh) this.refreshItems();
     }
     private refreshItems() {
@@ -231,6 +267,7 @@ export class PCFDatasetTester implements ComponentFramework.ReactControl<IInputs
                     // call notifyOutputChanged 20 times inside a setTimeout 100 times separated by 100ms
                     for (let i = 0; i < count; i++) {
                         setTimeout(() => {
+                            this.propertyBag['output_1'] = 'notify ' + i.toString();
                             this.notifyOutputChanged();
                         }, i * duration);
                     }

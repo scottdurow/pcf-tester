@@ -35,6 +35,13 @@ const useStyles = makeStyles({
     },
 });
 
+const useCellStyles = makeStyles({
+    overflow: {
+        textOverflow: 'ellipsis',
+        whiteSpace: 'nowrap',
+    },
+});
+
 export interface TesterProps {
     logEvents: LogEventRow[];
     width: number;
@@ -57,11 +64,12 @@ export interface TesterInterface {
 }
 
 export const Tester = React.forwardRef<TesterInterface, TesterProps>((props: TesterProps, ref) => {
-    const { logEvents, onCommand, height, heightMode, width, mode } = props;
+    const { logEvents, onCommand, height, heightMode, mode } = props;
 
     const inputId = useId('input');
     const [command, setCommand] = React.useState('');
     const styles = useStyles();
+    const cellStyles = useCellStyles();
     const { targetDocument } = useFluent();
     const scrollbarWidth = useScrollbarWidth({ targetDocument });
     const [internalLogEvents, setInternalLogEvents] = React.useState(props.logEvents);
@@ -70,7 +78,11 @@ export const Tester = React.forwardRef<TesterInterface, TesterProps>((props: Tes
 
     const controlHeight = (height || 0) > 0 ? `${height}px` : '100%';
 
-    const { ref: containerRef, height: containerHeight } = useDebouncedResizeObserver<HTMLDivElement>(200);
+    const {
+        ref: containerRef,
+        height: containerHeight,
+        width: containerWidth,
+    } = useDebouncedResizeObserver<HTMLDivElement>(200);
 
     React.useEffect(() => {
         setInternalLogEvents(logEvents);
@@ -93,7 +105,7 @@ export const Tester = React.forwardRef<TesterInterface, TesterProps>((props: Tes
                 return '#';
             },
             renderCell: (item) => {
-                return item.index.toString();
+                return <div>{item.index.toString()}</div>;
             },
         }),
         createTableColumn<LogEventRow>({
@@ -102,7 +114,7 @@ export const Tester = React.forwardRef<TesterInterface, TesterProps>((props: Tes
                 return 'Event';
             },
             renderCell: (item) => {
-                return item.eventName;
+                return <div>{item.eventName}</div>;
             },
         }),
         createTableColumn<LogEventRow>({
@@ -111,7 +123,7 @@ export const Tester = React.forwardRef<TesterInterface, TesterProps>((props: Tes
                 return 'Source';
             },
             renderCell: (item) => {
-                return item.source;
+                return <div>{item.source}</div>;
             },
         }),
         createTableColumn<LogEventRow>({
@@ -120,18 +132,9 @@ export const Tester = React.forwardRef<TesterInterface, TesterProps>((props: Tes
                 return 'message';
             },
             renderCell: (item) => {
-                return item.message;
+                return <div className={cellStyles.overflow}>{item.message}</div>;
             },
         }),
-        // createTableColumn<LogEventRow>({
-        //     columnId: 'timestamp',
-        //     renderHeaderCell: () => {
-        //         return 'Timestamp';
-        //     },
-        //     renderCell: (item) => {
-        //         return item.timestamp.toLocaleTimeString();
-        //     },
-        // }),
     ];
 
     const onCommandKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
@@ -151,8 +154,16 @@ export const Tester = React.forwardRef<TesterInterface, TesterProps>((props: Tes
     const gridHeight = heightMode === 'auto' ? (containerHeight ? containerHeight - 40 : 0) : 200;
 
     return (
-        <FluentProvider theme={webLightTheme}>
-            <div style={{ display: 'flex', flexDirection: 'column', width: `${width}px`, height: controlHeight }}>
+        <FluentProvider theme={webLightTheme} style={{ display: 'flex', width: '100%' }}>
+            <div
+                style={{
+                    display: 'flex',
+                    flexGrow: 1,
+                    flexDirection: 'column',
+                    height: controlHeight,
+                    width: `${containerWidth}px`,
+                }}
+            >
                 <div className={styles.root}>
                     <div style={{ width: '100%', display: 'flex', justifyContent: 'space-between' }}>
                         <Label htmlFor={inputId}>Command:</Label>
@@ -176,16 +187,17 @@ export const Tester = React.forwardRef<TesterInterface, TesterProps>((props: Tes
                         resizableColumns
                         columnSizingOptions={{
                             index: {
-                                idealWidth: 30,
+                                defaultWidth: 30,
                             },
                             event: {
-                                idealWidth: 100,
+                                defaultWidth: 100,
                             },
                             source: {
-                                idealWidth: 100,
+                                defaultWidth: 100,
                             },
                             timestamp: {
-                                minWidth: 100,
+                                defaultWidth: 100,
+                                idealWidth: 100,
                             },
                         }}
                     >
