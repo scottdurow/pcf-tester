@@ -105,6 +105,7 @@ export class PCFTester implements ComponentFramework.ReactControl<IInputs, IOutp
         modes.forEach((mode) => this.runCommand(mode));
     }
 
+    // eslint-disable-next-line sonarjs/cognitive-complexity
     private runCommand(mode: string) {
         const context = this.context;
         switch (mode) {
@@ -231,6 +232,7 @@ export class PCFTester implements ComponentFramework.ReactControl<IInputs, IOutp
         this.testerRef.current?.refresh(this.logEvents);
     }
 
+    // eslint-disable-next-line sonarjs/cognitive-complexity
     public onCommand(verb: string, args: string[]): void {
         this.setEvent(PCFEvents.Command);
         // get the command and arguments as as array of strings

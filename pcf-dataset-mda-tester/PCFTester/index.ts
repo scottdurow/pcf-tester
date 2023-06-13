@@ -105,6 +105,7 @@ export class PCFTester implements ComponentFramework.ReactControl<IInputs, IOutp
         modes.forEach((mode) => this.runCommand(mode));
     }
 
+    // eslint-disable-next-line sonarjs/cognitive-complexity
     private runCommand(mode: string) {
         const context = this.context;
         switch (mode) {
