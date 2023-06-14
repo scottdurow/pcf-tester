@@ -1,0 +1,17 @@
+{
+	"folders": [
+		{
+			"path": "pcf-dataset-mda-tester"
+		},
+		{
+			"path": "pcf-dataset-tester"
+		},
+		{
+			"path": "pcf-field-portal-tester"
+		},
+		{
+			"path": "pcf-field-tester"
+		}
+	],
+	"settings": {}
+}

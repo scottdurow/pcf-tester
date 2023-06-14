@@ -1,49 +1,24 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <manifest>
-  <control namespace="field" constructor="PCFTester" version="0.0.10" display-name-key="PCF Field Tester" description-key="PCF Field Tester" control-type="virtual" >
-    <!--external-service-usage node declares whether this 3rd party PCF control is using external service or not, if yes, this control will be considered as premium and please also add the external domain it is using.
-    If it is not using any external service, please set the enabled="false" and DO NOT add any domain below. The "enabled" will be false by default.
-    Example1:
-      <external-service-usage enabled="true">
-        <domain>www.Microsoft.com</domain>
-      </external-service-usage>
-    Example2:
-      <external-service-usage enabled="false">
-      </external-service-usage>
-    -->
-    <external-service-usage enabled="false">
-      <!--UNCOMMENT TO ADD EXTERNAL DOMAINS
-      <domain></domain>
-      <domain></domain>
-      -->
-    </external-service-usage>
-    <!-- dataset node represents a set of entity records on CDS; allow more than one datasets -->
-   
+  <control
+    namespace="field"
+    constructor="PCFTester"
+    version="0.0.10"
+    display-name-key="PCF Field Tester"
+    description-key="PCF Field Tester"
+    control-type="virtual" >
+    
     <property name="formHeight" display-name-key="Form Height" of-type="Whole.None" usage="input"/>
     <property name="output_1" display-name-key="Output 1" of-type="SingleLine.Text" usage="output"/>
     <property name="output_2" display-name-key="Output 2" of-type="SingleLine.Text" usage="output"/>
     <property name="bound_1" display-name-key="Bound 1" of-type="SingleLine.Text" usage="bound"/>
     <property name="bound_2" display-name-key="Bound 2" of-type="SingleLine.Text" usage="bound"/>
-    <event name="OnAction" display-name-key="OnAction" /> 
+
+    <event name="OnAction" display-name-key="OnAction" />
+
     <resources>
       <code path="index.ts" order="1"/>
       <platform-library name="React" version="16.8.6" />
-      <!-- UNCOMMENT TO ADD MORE RESOURCES
-      <css path="css/PCFDatasetTester.css" order="1" />
-      <resx path="strings/PCFDatasetTester.1033.resx" version="1.0.0" />
-      -->
     </resources>
-    <!-- UNCOMMENT TO ENABLE THE SPECIFIED API
-    <feature-usage>
-      <uses-feature name="Device.captureAudio" required="true" />
-      <uses-feature name="Device.captureImage" required="true" />
-      <uses-feature name="Device.captureVideo" required="true" />
-      <uses-feature name="Device.getBarcodeValue" required="true" />
-      <uses-feature name="Device.getCurrentPosition" required="true" />
-      <uses-feature name="Device.pickFile" required="true" />
-      <uses-feature name="Utility" required="true" />
-      <uses-feature name="WebAPI" required="true" />
-    </feature-usage>
-    -->
   </control>
 </manifest>
