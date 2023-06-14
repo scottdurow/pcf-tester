@@ -229,6 +229,50 @@ export class PCFTester implements ComponentFramework.StandardControl<IInputs, IO
                     false,
                 );
                 break;
+            case 'inputs':
+                {
+                    const fieldNames = Object.keys(context.parameters);
+                    // remove the out of the box values
+                    [
+                        'labelForPrefix',
+                        'deviceSizeMode',
+                        'viewportSizeMode',
+                        'syncError',
+                        'scope',
+                        'forceColumnLayout',
+                        'autoExpand',
+                        'NativeFilterExpressionToRestore',
+                        'LookupAttributeNameForHierarchy',
+                        'useSkypeProtocol',
+                        'gridPageNumber',
+                        'isNewPageRequested',
+                        'enhancedPagingDisabled',
+                        'isActivityTypeFilterDisabled',
+                        'showAddNewCommand',
+                        'emptySubgridIconAndTextChanges',
+                        'emptyGridChangesIfQuickFindImprovementsEnabled',
+                        'headerDialogOnTop',
+                        'headerDialogPreventDismissOnScroll',
+                        'listSortHeaderEnabled',
+                    ].forEach((field) => {
+                        const index = fieldNames.indexOf(field);
+                        if (index > -1) fieldNames.splice(index, 1);
+                    });
+
+                    const parameters = context.parameters as any as Record<
+                        string,
+                        ComponentFramework.PropertyTypes.Property
+                    >;
+
+                    const fieldValues = fieldNames.map((fieldName) => {
+                        const parameterValue = parameters[fieldName];
+                        if (parameterValue) return `${fieldName}=${parameterValue?.raw}`;
+                    });
+                    const outputString = fieldValues.join(' | ');
+
+                    this.logEvent(`♻️inputs ${this.incrementEventCount('inputs')}`, outputString, false);
+                }
+                break;
 
             case 'state':
                 {
