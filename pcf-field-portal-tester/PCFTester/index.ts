@@ -391,6 +391,9 @@ export class PCFTester implements ComponentFramework.StandardControl<IInputs, IO
                 }
                 break;
             case 'notify':
+                this.notifyOutputChanged();
+                break;
+            case 'notify_n':
                 {
                     //get the count from the first argument
                     const count = parseInt(args[0]) || 1;
