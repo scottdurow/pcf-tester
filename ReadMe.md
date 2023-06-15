@@ -10,12 +10,23 @@ The following modes are supported:
 - `error` - Simulates an error happening during the `updateView`
 - `data` - Outputs the dataset data received
 - `columns` - Outputs the columns configured in the dataset
+- `hidden_columns` - Outputs the hidden columns with hidden=true or order=-1
 - `dataset` - Logs information about the dataset including loading, error state and paging
 - `size` - Shows the width/height received by the control
 - `updates` - Shows the `updatedProperties` array value
 - `state` - Outputs the control state
 
-Commands
+When an event is logged, it is categories as:
+
+-  init: 🟢
+- updateView: 🔶
+- Manual Command: 🚀
+- getOutputs: 🔼
+- destroy: Not reported
+
+The Event is also followed by a counter value. So if there are 2 calls to updateView so far in the lifecycle, then it will show as 🔶 2
+
+## Commands
 
 The following commands can be used:
 
