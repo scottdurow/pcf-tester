@@ -135,6 +135,20 @@ export class PCFTester implements ComponentFramework.ReactControl<IInputs, IOutp
                     }
                 }
                 break;
+            case 'hidden_columns':
+                {
+                    const dataset = context.parameters.dataset_a;
+                    if (dataset) {
+                        const columns = dataset.columns.filter((c) => c.isHidden || c.order === -1);
+                        const columnDisplayNames = columns.map((c) => `${c.displayName}`).join(' | ');
+                        const columnLogicalNames = columns
+                            .map((c) => `${c.name}${c.alias ? '(' + c.alias + ')' : ''}`)
+                            .join(' | ');
+                        this.logEvent('Hidden Cols', columnDisplayNames);
+                        this.logEvent('Cols (logical/alias)', columnLogicalNames);
+                    }
+                }
+                break;
             case 'dataset':
                 {
                     const dataset = context.parameters.dataset_a;

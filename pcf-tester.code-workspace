@@ -13,5 +13,20 @@
 			"path": "pcf-field-tester"
 		}
 	],
-	"settings": {}
+	"settings": {
+		"cSpell.words": [
+			"clearevents",
+			"clearproperty",
+			"clearstate",
+			"eventnotify",
+			"eventschedule",
+			"loadexactpage",
+			"loadnextpage",
+			"loadpreviouspage",
+			"setselection",
+			"setstate",
+			"sonarjs",
+			"Subgrid"
+		]
+	}
 }
