@@ -3,7 +3,7 @@
   <control
     namespace="field"
     constructor="PCFTester"
-    version="0.0.10"
+    version="0.0.15"
     display-name-key="PCF Field Tester"
     description-key="PCF Field Tester"
     control-type="virtual" >

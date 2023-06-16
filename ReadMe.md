@@ -32,9 +32,9 @@ The following commands can be used:
 
 - `mode [mode list]` - Sets one or modes (comma separated). Chain them in a specific order - e.g. `clearevents,columns,dataset`
 
-- `event` - Updates the `Output 2` property with a random value.
+- `event` - Updates the `Output 2` property with a random value and raises the `OnAction` event
 
-- `eventnotify` - Updates the `Output 2` property the same as the `event` command, except also calls `notifyOutputChanged`
+- `eventnotify` - Updates the `Output 2` property the same as the `event` command, raises the `OnAction` , except also calls `notifyOutputChanged`
 
 - `setselection` - Set the selected records to the first dataset row
 
@@ -50,7 +50,9 @@ The following commands can be used:
 
 - `report` - Simulates an `updateView` call and reports based on the mode
 
-- `notify [count] [interval]`-  Calls `notifyOutputChanged` a specific set of times at a given interval - e.g. `notify 10 1000` will call `notifyOutputChanged` 10 times at an interval of 1000ms
+- `notify` - called `notifyOutputChanged`
+
+- `notify_n [count] [interval]`-  Calls `notifyOutputChanged` a specific set of times at a given interval - e.g. `notify 10 1000` will call `notifyOutputChanged` 10 times at an interval of 1000ms
 
 - `cls` - Clears all log events
 

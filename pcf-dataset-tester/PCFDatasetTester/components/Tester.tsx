@@ -190,7 +190,7 @@ export const Tester = React.forwardRef<TesterInterface, TesterProps>((props: Tes
                                 defaultWidth: 30,
                             },
                             event: {
-                                defaultWidth: 100,
+                                defaultWidth: 120,
                             },
                             source: {
                                 defaultWidth: 100,

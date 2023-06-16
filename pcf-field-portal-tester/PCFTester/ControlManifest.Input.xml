@@ -3,7 +3,7 @@
   <control
     namespace="fieldportal"
     constructor="PCFTester"
-    version="0.0.2"
+    version="0.0.15"
     display-name-key="PCF Portal Field Tester"
     description-key="PCF Portal Field Tester"
     control-type="standard" >

@@ -3,7 +3,7 @@
   <control
     namespace="DatasetMDA"
     constructor="PCFTester"
-    version="0.0.10"
+    version="0.0.15"
     display-name-key="MDA Dataset Tester" 
     description-key="MDA Dataset Tester" 
     control-type="virtual" >

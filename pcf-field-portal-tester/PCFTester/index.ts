@@ -11,10 +11,10 @@ const enum PCFEvents {
     Command = 'Command',
 }
 const EventNameMap: Record<PCFEvents, string> = {
-    init: '🟢',
-    updateView: '🔶',
-    Command: '🚀',
-    getOutputs: '🔼',
+    init: '🟢init',
+    updateView: '🔶updateView',
+    Command: '🚀command',
+    getOutputs: '🔼getOutputs',
 };
 
 export class PCFTester implements ComponentFramework.StandardControl<IInputs, IOutputs> {
@@ -148,7 +148,7 @@ export class PCFTester implements ComponentFramework.StandardControl<IInputs, IO
                 {
                     const dataset = context.parameters.dataset_a;
                     if (dataset) {
-                        const columns = dataset.columns.filter((c) => !c.isHidden && c.order !== -1);
+                        const columns = dataset.columns;
                         const datasetChanged =
                             context.updatedProperties.indexOf('dataset') > -1 ||
                             context.updatedProperties.indexOf('records_dataset_a') > -1;
@@ -403,7 +403,9 @@ export class PCFTester implements ComponentFramework.StandardControl<IInputs, IO
                     // call notifyOutputChanged 20 times inside a setTimeout 100 times separated by 100ms
                     for (let i = 0; i < count; i++) {
                         setTimeout(() => {
-                            this.propertyBag['output_1'] = 'notify ' + i.toString();
+                            const outputValue = i.toString();
+                            this.logEvent('notify_n', 'output_1=' + outputValue);
+                            this.propertyBag['output_1'] = 'notify ' + outputValue;
                             this.notifyOutputChanged();
                         }, i * duration);
                     }
