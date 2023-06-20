@@ -4,7 +4,7 @@ The purpose of these sets of controls is to enable testing of specific scenarios
 
 The monitoring behaviour is controlled via the `mode` command. Using mode allows the control to be placed into one or more monitoring modes. Multiple modes can be combined using a comma separated list (e.g. mode dataset,columns). The mode is stored in local storage state so that is it preserved between refreshed/re-loads, making it easy to test consistently. 
 
-![image-20230619144255328](C:\repos\pcf-tester\media\form-field-testing.png)
+![image-20230619144255328](media\form-field-testing.png)
 
 The following modes are supported:
 
